@@ -5,7 +5,7 @@ namespace test
     class Program
     {
         private static int[,] rooms;
-        private const int dim = 57;
+        private const int dim = 41;
         private const int step = 8;
         private const int wall = 1;
         private const int space = 0;
@@ -17,7 +17,7 @@ namespace test
             get; private set;
         }
 
-        public static void fillBool(bool [,] cells)
+        public static void fillBool(bool[,] cells)
         {
             for (int i = 0; i <= cells.GetUpperBound(0); i++)
             {
@@ -41,8 +41,8 @@ namespace test
 
             int maxWidth = step - 1, maxHeight = maxWidth, ready = 0;
             Random generetor = new Random();
-            int cellsCount = (int)Math.Sqrt((double)(dim / step));
-            int maxRooms = cellsCount / 3;
+            int cellsCount = (int)(Math.Pow((double)(dim / step), 2.0));
+            int maxRooms = cellsCount * 3 / 4;
             bool[,] cells = new bool[dim / step, dim / step];
             fillBool(cells);
 
@@ -53,23 +53,25 @@ namespace test
                 int cellX = x / step;
                 int cellY = y / step;
 
-                if (cells[x,y])
+                if (cells[cellY, cellX])
                 {
                     continue;
                 }
 
                 int roomWidth = minWidth + generetor.Next(step - 1 - minWidth);
                 int roomHeight = minHeight + generetor.Next(step - 1 - minHeight);
-                
-                for (int i = y - y % step + 1; i < step * (y + 1); i++)
+                int startY = y - y % step + 1, startX = x - x % step + 1;
+
+
+                for (int i = startY; i < startY + roomHeight; i++)
                 {
-                    for (int j = x - x % step + 1; j < step * (x + 1); j++)
+                    for (int j = startX; j < startX + roomWidth; j++)
                     {
                         rooms[i, j] = space;
                     }
                 }
 
-                cells[x, y] = true;
+                cells[cellY, cellX] = true;
                 ready++;
             }
 
@@ -88,9 +90,9 @@ namespace test
             {
                 for (int j = 0; j <= cMax; j++)
                 {
-                    if (maze[i, j] == 0)
+                    if (maze[i, j] == space)
                     {
-                        msg += "....";
+                        msg += "--";
                     }
                     else
                     {
